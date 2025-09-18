@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Table, Button, Modal, message } from 'antd';
+import { Table, Button, Modal, message, Space } from 'antd';
+import { EyeOutlined } from '@ant-design/icons';
+import { useHistory } from 'react-router-dom';
 import PersonnelForm from '../components/PersonnelForm';
 import { fetchPersonnel, addPersonnel, editPersonnel, deletePersonnel } from '../api/personnel';
 
@@ -7,6 +9,7 @@ const PersonnelManagementPage = () => {
   const [personnelData, setPersonnelData] = useState([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [editingPersonnel, setEditingPersonnel] = useState(null);
+  const history = useHistory();
 
   useEffect(() => {
     loadPersonnelData();
@@ -29,6 +32,10 @@ const PersonnelManagementPage = () => {
   const handleEdit = (record) => {
     setEditingPersonnel(record);
     setIsModalVisible(true);
+  };
+
+  const handleViewResume = (record) => {
+    history.push(`/resume/${record.id}`);
   };
 
   const handleDelete = async (id) => {
@@ -77,10 +84,17 @@ const PersonnelManagementPage = () => {
       title: 'Actions',
       key: 'actions',
       render: (text, record) => (
-        <>
+        <Space size="small">
+          <Button 
+            icon={<EyeOutlined />} 
+            onClick={() => handleViewResume(record)}
+            title="查看简历"
+          >
+            简历
+          </Button>
           <Button onClick={() => handleEdit(record)}>Edit</Button>
           <Button onClick={() => handleDelete(record.id)} danger>Delete</Button>
-        </>
+        </Space>
       ),
     },
   ];
@@ -91,7 +105,7 @@ const PersonnelManagementPage = () => {
       <Table columns={columns} dataSource={personnelData} rowKey="id" />
       <Modal
         title={editingPersonnel ? 'Edit Personnel' : 'Add Personnel'}
-        visible={isModalVisible}
+        open={isModalVisible}
         onCancel={() => setIsModalVisible(false)}
         footer={null}
       >
